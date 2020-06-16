@@ -18,14 +18,14 @@ script:
 
 # If tests were succesful:
 after_success:
-    # Create the docker-production builds
+    # Create the docker-production builds:
     - docker build -t vagandon/multi_app_fib_client ./client
     - docker build -t vagandon/multi_app_fib_nginx ./nginx
     - docker build -t vagandon/multi_app_fib_server ./server
     - docker build -t vagandon/multi_app_fib_worker ./worker
-    # Log in to the docker CLI
+    # Log in to the docker CLI:
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
-    # Push images to docker hub
+    # Push images to docker hub:
     - docker push vagandon/multi_app_fib_client
     - docker push vagandon/multi_app_fib_nginx
     - docker push vagandon/multi_app_fib_server
