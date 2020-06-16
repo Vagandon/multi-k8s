@@ -1,0 +1,33 @@
+# the following is required if the travis-CI build fails with “rakefile not found” 
+language: generic
+
+# services we need:
+services:
+    - docker
+
+# build a test version before deployment based on the development version,
+# because the tooling for running the tests is not included in the build 
+# version for production:
+before_install:
+    - docker build -t vagandon/app_fib_react_test -f ./client/Dockerfile.dev ./client
+
+# run tests -> if any script specified in this section fails with exit code != 0,
+# then Travis-CI assumes that there is an issue and will not deploy
+script:
+    - docker run -e CI=true vagandon/app_fib_react_test npm test
+
+# If tests were succesful:
+after_success:
+    # Create the docker-production builds
+    - docker build -t vagandon/multi_app_fib_client ./client
+    - docker build -t vagandon/multi_app_fib_nginx ./nginx
+    - docker build -t vagandon/multi_app_fib_server ./server
+    - docker build -t vagandon/multi_app_fib_worker ./worker
+    # Log in to the docker CLI
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+    # Push images to docker hub
+    - docker push vagandon/multi_app_fib_client
+    - docker push vagandon/multi_app_fib_nginx
+    - docker push vagandon/multi_app_fib_server
+    - docker push vagandon/multi_app_fib_worker
+
