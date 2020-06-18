@@ -5,23 +5,27 @@
             "name": "app_fib_client",
             "image": "vagandon/multi_app_fib_client",
             "hostname": "client",
-            "essential": false
+            "essential": false,
+            "memory": 128
         },
         {
             "name": "app_fib_server",
             "image": "vagandon/multi_app_fib_server",
             "hostname": "api",
-            "essential": false
+            "essential": false,
+            "memory": 128
         },
         {
             "name": "app_fib_worker",
             "image": "vagandon/multi_app_fib_worker",
             "hostname": "worker",
-            "essential": false
+            "essential": false,
+            "memory": 128
         },
         {
             "name": "app_fib_nginx",
             "image": "vagandon/multi_app_fib_nginx",
+            "hostname": "nginx",
             "essential": true,
             "portMappings": [
                 {
@@ -29,7 +33,8 @@
                     "containerPort": 80
                 }
             ],
-            "links": ["app_fib_client", "app_fib_server"]
+            "links": ["app_fib_client", "app_fib_server"],
+            "memory": 128
         }
     ]
 }
