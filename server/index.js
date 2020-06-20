@@ -28,14 +28,13 @@ pgClient.on('error', () => console.log('Lost PG connection'));
 
 // Initial table creation to store the indicies of submitted values
 // (that's the job of our database)
-/*
 pgClient.on('connect', () => {
     pgClient
       .query('CREATE TABLE IF NOT EXISTS values (number INT)')
       .catch((err) => console.log(err));
   });
-*/
-/* old: */
+/**/
+/* old: 
 pgClient
     .query('CREATE TABLE IF NOT EXISTS values (number INT)')
     .catch(err => console.log(err));
