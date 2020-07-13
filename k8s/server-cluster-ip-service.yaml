@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+    name: server-cluster-ip-service
+spec:
+    type: ClusterIP
+    selector: 
+        # the selector needs to fit the label in client-deployment.yaml:
+        myservercomponent: expressserver
+    ports:
+        # - port and targetPort could be different
+        # - targetPort needs to fit to the hard-coded port
+        #   in index.js of the express server
+        - port: 5000
+          targetPort: 5000

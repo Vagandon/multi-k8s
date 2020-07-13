@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: postgres-deployment
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            component: postgres
+    template:
+        metadata:
+            labels:
+                component: postgres
+        spec:
+            volumes:
+                # The claimName must be identical to the name in the PVC config file
+                - name: postgres-storage
+                  persistentVolumeClaim:
+                    claimName: database-persistent-volume-claim
+            containers:
+                # Note: we are using the publicly available image on DockerHub
+                # Note: we are using the default port of postgres
+                - name: postgres
+                  image: postgres
+                  ports:
+                    - containerPort: 5432
+                  volumeMounts:
+                    # The name below must be the name above in the volumes section
+                    # The mountPath is the default Postgres mount path (see Postgres docu)
+                    # The subPath is required, because Postgres requires a subdirectory
+                    # below the mount point
+                    - name: postgres-storage
+                      mountPath: /var/lib/postgresql/database
+                      subPath: postgres
+                  env:
+                    # Note: if the image detects a set environment variable
+                    #       "POSTGRES_PASSWORD", it will use the value of this
+                    #       environment variable for the database password
+                    - name: POSTGRES_PASSWORD
+                      valueFrom:
+                        secretKeyRef:
+                            name: pgpassword
+                            key: PGPASSWORD

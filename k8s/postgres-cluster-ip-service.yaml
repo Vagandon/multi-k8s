@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+    name: postgres-cluster-ip-service
+spec:
+    type: ClusterIP
+    selector: 
+        # the selector needs to fit the label in postgres-deployment.yaml:
+        component: postgres
+    ports:
+        # - port is the port other pods / services in the cluster can use
+        #   to access the postgres service (can be different from targetPort)
+        # - targetPort: the actual container-port of our postgres service
+        - port: 5432
+          targetPort: 5432

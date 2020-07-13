@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: server-deployment
+spec:
+    replicas: 3
+    selector:
+        matchLabels:
+            # note that instead of "component", we can use something else:
+            myservercomponent: expressserver
+    template:
+        metadata:
+            labels:
+                myservercomponent: expressserver
+        spec:
+            containers:
+                - name: server
+                  image: vagandon/multi_app_fib_server
+                  ports:
+                    - containerPort: 5000
+                  env:
+                    # Note: the names of the environment variables must match
+                    #       the environment variables expected by the image of the server
+                    # Note: the secretKeyRef has a name => thats the name we gave the 
+                    #       secret when we created it (check with "kubectl get secrets")
+                    #       the secretKeyRef has a key => that is the key we used when 
+                    #       the secret was created
+                    - name: REDIS_HOST
+                      value: redis-cluster-ip-service
+                    - name: REDIS_PORT
+                      value: '6379'
+                    - name: PGUSER
+                      value: postgres
+                    - name: PGHOST
+                      value: postgres-cluster-ip-service
+                    - name: PGPORT
+                      value: '5432'
+                    - name: PGDATABASE
+                      value: postgres
+                    - name: PGPASSWORD
+                      valueFrom:
+                        secretKeyRef:
+                            name: pgpassword
+                            key: PGPASSWORD
