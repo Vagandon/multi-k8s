@@ -9,7 +9,8 @@ env:
         - CLOUDSDK_CORE_DISABLE_PROMPTS=1
 before_install:
     # Encrypted login for travis to Google Cloud as provided by the Travis CLI command:
-    - openssl aes-256-cbc -K $encrypted_9f3b5599b056_key -iv $encrypted_9f3b5599b056_iv -in service-account.json.enc -out service-account.json -d
+    - openssl aes-256-cbc -K $encrypted_e7358568aba1_key -iv $encrypted_e7358568aba1_iv -in service-account2.json.enc -out service-account2.json -d
+    # - openssl aes-256-cbc -K $encrypted_9f3b5599b056_key -iv $encrypted_9f3b5599b056_iv -in service-account.json.enc -out service-account.json -d
     # The next part covers the following steps:
     # 1. Install Google Cloud SDK CLI
     # 2. Configure the SDK without Google Cloud auth info
@@ -23,7 +24,7 @@ before_install:
     # Ensure that the kubectl command is installed as well:
     - gcloud components update kubectl
     # Get access via a service account. The credentials are in the json file
-    - gcloud auth activate-service-account --key-file service-account.json
+    - gcloud auth activate-service-account --key-file service-account2.json
     # Tell Google cloud which project we want to use
     # - Note: we have to specify the project id, not the name
     - gcloud config set project multi-app-fib-k8s
