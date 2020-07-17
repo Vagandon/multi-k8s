@@ -26,7 +26,7 @@ before_install:
     - gcloud auth activate-service-account --key-file service-account.json
     # Tell Google cloud which project we want to use
     # - Note: we have to specify the project id, not the name
-    - gcloud config set project multi-app-fib-k8S
+    - gcloud config set project multi-app-fib-k8s
     # Specify the compute zone (this can found in Google cloud by navigating to
     # the Kubernetes engine service)
     - gcloud config set compute/zone europe-west3-a
