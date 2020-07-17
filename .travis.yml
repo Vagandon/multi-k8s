@@ -1,17 +1,22 @@
 sudo: required
 services:
     - docker
+env:
+    global:
+        # Get the latest GIT_SHA value to build a unique tag
+        - SHA=$(git rev-parse HEAD)
+        # Tell Google that any interactive user prompt should be suppressed:
+        - CLOUDSDK_CORE_DISABLE_PROMPTS=1
 before_install:
-    # Encrypted login for travis to Google Cloud
+    # Encrypted login for travis to Google Cloud as provided by the Travis CLI command:
     - openssl aes-256-cbc -K $encrypted_9f3b5599b056_key -iv $encrypted_9f3b5599b056_iv -in service-account.json.enc -out service-account.json -d
-    # This covers the following steps:
+    # The next part covers the following steps:
     # 1. Install Google Cloud SDK CLI
     # 2. Configure the SDK without Google Cloud auth info
     # 3. Login to Docker CLI
     # 4. Build the 'test' version of multi-client
     # --------------------------------------------------------
-    # Step 1:
-    # Install Google Cloud SDK:
+    # Step 1: install Google Cloud SDK:
     - curl https://sdk.cloud.google.com | bash > /dev/null;
     # Configure the environment:
     - source $HOME/google-cloud-sdk/path.bash.inc
@@ -19,3 +24,34 @@ before_install:
     - gcloud components update kubectl
     # Get access via a service account. The credentials are in the json file
     - gcloud auth activate-service-account --key-file service-account.json
+    # Tell Google cloud which project we want to use
+    # - Note: we have to specify the project id, not the name
+    - gcloud config set project multi-app-fib-k8s
+    # Specify the compute zone (this can found in Google cloud by navigating to
+    # the Kubernetes engine service)
+    - gcloud config set compute/zone europe-west3-a
+    # Specify the cluster to which the kubectl commands apply
+    - gcloud container clusters get-credentials cluster-multi-app-fib-k8s
+    # Login to docker (we have access to docker because we specified it as a service above)
+    # - DOCKER_PASSWORD and DOCKER_USERNAME must be specified as environment variables
+    #   in Travis CI in the correct project
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+    # Build the image for test purposes:
+    # - we tag the image 
+    # - we use the development dockerfile in the client directory
+    # - the build context is the client directory
+    - docker build -t vagandon/app_fib_react_test -f ./client/Dockerfile.dev ./client
+
+script:
+    # Step 5: run the tests (no real testing is done; this is just for reference)
+    - docker run -e CI=true vagandon/app_fib_react_test npm run test
+
+deploy:
+    # Travis-CI has no standard-deployer to a kubernetes, hence we need a script to
+    # build a custom one:
+    provider: script
+    # We will provide a shell script which does the job:
+    script: bash ./deploy.sh
+    # We have to specify the branch:
+    on:
+        branch: master
