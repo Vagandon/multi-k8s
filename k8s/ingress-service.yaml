@@ -10,9 +10,35 @@ metadata:
         # to a new target, this /whatever is replaced by "/"
         # => in our case: /api is replaced by "/"
         nginx.ingress.kubernetes.io/rewrite-target: /$1
+        # HTTPS support: tell the ingress service which cluster issuer to use:
+        cert-manager.io/cluster-issuer: "letsencrypt-prod"
+        # HTTPS support: Force users to use https
+        nginx.ingress.kubernetes.io/ssl-redirect: 'true'
 spec:
+    # HTTPS support: tls-section - tell ingress for which hosts to use which secret:
+    tls:
+        - hosts:
+            - ttttestjd.de
+            - www.ttttestjd.de
+          secretName: ttttestjd-de
     rules:
-        - http:
+        # HTTPS support:Provide the rule for ttttestjd.de (note: needs to be repeated for all hosts)
+        # - i.e. for HTTPS support we added the "host: <domain>" and copied the complete entry
+        #   for the second domain
+        - host: ttttestjd.de
+          http:
+            paths:
+                - path: /?(.*)
+                  backend:
+                    serviceName: client-cluster-ip-service
+                    servicePort: 3000
+                - path: /api/?(.*)
+                  backend: 
+                    serviceName: server-cluster-ip-service
+                    servicePort: 5000
+        # Provide the rule for www.ttttestjd.de (note: needs to be repeated for all hosts)
+        - host: www.ttttestjd.de
+          http:
             paths:
                 - path: /?(.*)
                   backend:
