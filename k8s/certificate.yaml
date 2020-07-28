@@ -1,0 +1,33 @@
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+    # One can give this thing any name, but it helps to
+    # make the name similar to the domain and to specify
+    # which protocol is used
+    name: ttttestjd-de-tls
+spec:
+    # The name of the secret where the signed certificate will
+    # be stored:
+    secretName: ttttestjd-de
+    issuerRef:
+        # The name of the issuer as defined in issuer.yaml
+        name: letsencrypt-prod
+        # We can reference ClusterIssuers by changing the kind here.
+        # The default value is Issuer (i.e. a locally namespaced Issuer)
+        kind: ClusterIssuer
+    # The commonname must be the domain name:
+    commonName: ttttestjd.de
+    # Specify all the domains to which the certificate applies:
+    dnsNames:
+        - ttttestjd.de
+        - www.ttttestjd.de
+    acme:
+        config:
+            # This section is about the challenge posed to us by the CA
+            # In domains, all domains are listed to which the challenges
+            # should be posed
+            - http01:
+                ingressClass: nginx
+              domains:
+                - ttttestjd.de
+                - www.ttttestjd.de

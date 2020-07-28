@@ -1,0 +1,23 @@
+apiVersion: cert-manager.io/v1alpha2
+# Note: we are using a ClusterIssuer, i.e. valid for the whole cluster
+kind: ClusterIssuer
+metadata:
+    name: letsencrypt-prod
+spec:
+    acme:
+        # You must replace this email address with your own.
+        # Let's Encrypt will use this to contact you about expiring
+        # certificates, and issues related to your account.
+        email: jd7zig@protonmail.com
+        # Note: there is also a staging server, but we are using directly prod:
+        server: https://acme-v02.api.letsencrypt.org/directory
+        privateKeySecretRef:
+            # Secret resource that will be used to store the account's private key
+            # We do not have to create this resource; cert-manager will do this for us
+            name: letsencrypt-prod
+        # Add a single challenge solver, HTTP01 using nginx
+        # More than one solver types exist > check the documentation
+        solvers:
+            - http01:
+                ingress:
+                    class: nginx
