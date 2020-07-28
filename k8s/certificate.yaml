@@ -21,13 +21,13 @@ spec:
     dnsNames:
         - ttttestjd.de
         - www.ttttestjd.de
-    acme:
-        config:
-            # This section is about the challenge posed to us by the CA
-            # In domains, all domains are listed to which the challenges
-            # should be posed
-            - http01:
-                ingressClass: nginx
-              domains:
-                - ttttestjd.de
-                - www.ttttestjd.de
+    # acme:
+    #     config:
+    #         # This section is about the challenge posed to us by the CA
+    #         # In domains, all domains are listed to which the challenges
+    #         # should be posed
+    #         - http01:
+    #             ingressClass: nginx
+    #           domains:
+    #             - ttttestjd.de
+    #             - www.ttttestjd.de
